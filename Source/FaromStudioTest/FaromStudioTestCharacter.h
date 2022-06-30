@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "FaromStudioTestCharacter.generated.h"
 
+class ABaseWeapon;
+class ARangeWeapon;
 UCLASS(config=Game)
 class AFaromStudioTestCharacter : public ACharacter
 {
@@ -24,6 +26,15 @@ public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input)
 	float TurnRateGamepad;
+
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	void StartFire();
+	void StopFire();
+	void Reload();
 
 protected:
 
@@ -51,15 +62,10 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
-protected:
 	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	// End of APawn interface
-
-public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+    // End of APawn interface
+private:
+	ARangeWeapon* CurrentRangeWeapon = nullptr;
 };
 

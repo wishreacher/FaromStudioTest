@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Weapon/RangeWeapon.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AFaromStudioTestCharacter
@@ -75,6 +76,31 @@ void AFaromStudioTestCharacter::SetupPlayerInputComponent(class UInputComponent*
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AFaromStudioTestCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AFaromStudioTestCharacter::TouchStopped);
+}
+
+void AFaromStudioTestCharacter::StartFire()
+{
+	if(!IsValid(CurrentRangeWeapon))
+	{
+		return;
+	}
+	CurrentRangeWeapon->StartFire();
+}
+
+void AFaromStudioTestCharacter::StopFire()
+{
+	if(IsValid(CurrentRangeWeapon))
+	{
+		CurrentRangeWeapon->StopFire();
+	}
+}
+
+void AFaromStudioTestCharacter::Reload()
+{
+	if(IsValid(CurrentRangeWeapon))
+	{
+		CurrentRangeWeapon->StartReload();
+	}
 }
 
 void AFaromStudioTestCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
