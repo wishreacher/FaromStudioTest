@@ -43,7 +43,7 @@ void UWeaponBarrelComponent::Shot(FVector ShotStart, FVector ShotDirection)
 {
 	FHitResult ShotResult;
 	FVector ShotEnd = ShotStart + FireRange * ShotDirection;
-	bool bHasHit = HitScan(ShotStart, ShotDirection, ShotEnd, ShotResult);
+	HitScan(ShotStart, ShotDirection, ShotEnd, ShotResult);
 }
 
 APawn* UWeaponBarrelComponent::GetOwningPawn() const

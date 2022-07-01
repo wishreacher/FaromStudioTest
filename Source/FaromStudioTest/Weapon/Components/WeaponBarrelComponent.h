@@ -32,7 +32,6 @@ protected:
 	USoundBase* HitSound;
 
 private:
-	
 	bool HitScan(FVector ShotStart, FVector ShotDirection, FVector& ShotEnd, FHitResult ShotResult);
 
 	UFUNCTION()
