@@ -8,7 +8,13 @@
 ARangeWeapon::ARangeWeapon()
 {
 	WeaponBarrel = CreateDefaultSubobject<UWeaponBarrelComponent>(TEXT("WeaponBarrelComponent"));
-	WeaponBarrel->SetupAttachment(RootComponent);
+	WeaponBarrel->SetupAttachment(WeaponMesh, FName("MuzzleSocket"));
+}
+
+void ARangeWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+	SetAmmo(MaxAmmo);
 }
 
 void ARangeWeapon::StartFire()
@@ -31,11 +37,6 @@ void ARangeWeapon::MakeShot()
 	{
 		return;
 	}
-	
-	if(bIsReloading)
-	{
-		return;
-	}
 
 	if(!CanShoot())
 	{
@@ -55,21 +56,12 @@ void ARangeWeapon::MakeShot()
 	FVector ViewDirection = PlayerViewRotation.RotateVector(FVector::ForwardVector);
 
 	SetAmmo(Ammo - 1);
-	WeaponBarrel->Shot(PlayerViewPoint, ViewDirection);
-
-	if(Ammo == 0)
-	{
-		CharacterOwner->Reload();
-	}
+	WeaponBarrel->Shot(WeaponBarrel->GetComponentLocation(), ViewDirection);
 }
 
 void ARangeWeapon::SetAmmo(int32 NewAmmo)
 {
 	Ammo = NewAmmo;
-	if(OnAmmoChanged.IsBound())
-	{
-		OnAmmoChanged.Broadcast(Ammo);
-	}
 }
 
 bool ARangeWeapon::CanShoot() const
@@ -82,18 +74,14 @@ int32 ARangeWeapon::GetAmmo() const
 	return Ammo;
 }
 
-int32 ARangeWeapon::GetMaxAmmo() const
+int32 ARangeWeapon::GetAvailableAmmo() const
 {
-	return MaxAmmo;
+	return AvailableAmmo;
 }
 
 void ARangeWeapon::StartReload()
 {
 	if(Ammo == MaxAmmo)
-	{
-		return;
-	}
-	if(bIsReloading)
 	{
 		return;
 	}
@@ -103,39 +91,12 @@ void ARangeWeapon::StartReload()
 		return;
 	}
 	
-	bIsReloading = true;
-	EndReload(true);
 	
-}
+	int32 AmmoToReload = MaxAmmo - Ammo;
+	int32 ReloadedAmmo = FMath::Min(AvailableAmmo, AmmoToReload);
 
-void ARangeWeapon::EndReload(bool bIsSuccess)
-{
-	if(!bIsReloading)
-	{
-		return;
-	}
-
-	bIsReloading = false;
-
-	if(OnReloadBegin.IsBound())
-	{
-		OnReloadBegin.Broadcast();
-	}
-	
-	GetWorld()->GetTimerManager().ClearTimer(ReloadTimer);
-	if(bIsSuccess && OnReloadComplete.IsBound())
-	{
-		OnReloadComplete.Broadcast();
-	}
-}
-
-bool ARangeWeapon::GetIsReloading() const
-{
-	if(this)
-	{
-		return bIsReloading;
-	}
-	return false;
+	AvailableAmmo -= ReloadedAmmo;
+	SetAmmo(ReloadedAmmo + Ammo);
 }
 
 float ARangeWeapon::GetShotTimerInterval()

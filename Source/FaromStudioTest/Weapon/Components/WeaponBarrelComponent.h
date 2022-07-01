@@ -2,7 +2,7 @@
 
 #pragma once
 
-#define ECC_Bullet ECC_GameTraceChannel1
+
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
@@ -25,11 +25,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Barrel Attributes")
 	float BaseDamageAmount = 20.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "VFX")
-	UNiagaraSystem* TraceFX;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Barrel Attributes")
 	TSubclassOf<UDamageType> DamageTypeClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Barrel Attributes")
+	USoundBase* HitSound;
 
 private:
 	

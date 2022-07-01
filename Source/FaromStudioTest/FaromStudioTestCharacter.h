@@ -65,7 +65,8 @@ protected:
 	// APawn interface
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
     // End of APawn interface
-private:
+
+	UPROPERTY(BlueprintReadWrite)
 	ARangeWeapon* CurrentRangeWeapon = nullptr;
 };
 

@@ -10,13 +10,11 @@ bool UWeaponBarrelComponent::HitScan(FVector ShotStart, FVector ShotDirection,
                                      OUT FVector& ShotEnd, FHitResult ShotResult) 
 {
 	FCollisionQueryParams QueryParams = FCollisionQueryParams::DefaultQueryParam;
-	AFaromStudioTestCharacter* PlayerCharacter = Cast<AFaromStudioTestCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	// if(IsValid(PlayerCharacter))
-	// {
-		QueryParams.AddIgnoredActor(GetOwner());
-	// }
+	QueryParams.AddIgnoredActor(GetOwner());
+	QueryParams.AddIgnoredActor(GetOwningPawn());
 	
-	bool bHasHit = GetWorld()->LineTraceSingleByChannel(ShotResult, ShotStart, ShotEnd, ECC_Bullet, QueryParams);
+	bool bHasHit = GetWorld()->LineTraceSingleByChannel(ShotResult, ShotStart, ShotEnd, ECC_GameTraceChannel1, QueryParams);
+	DrawDebugLine(GetWorld(), ShotStart, ShotEnd, FColor::Red, false, 1.0f, 0, 3.0f);
 	if(bHasHit)
 	{
 		ProcessHit(ShotResult, ShotDirection);
@@ -26,6 +24,12 @@ bool UWeaponBarrelComponent::HitScan(FVector ShotStart, FVector ShotDirection,
 
 void UWeaponBarrelComponent::ProcessHit(const FHitResult& Hit, const FVector& Direction)
 {
+	DrawDebugSphere(GetWorld(), Hit.Location, 10.0f, 24, FColor::Red, false, 1.0f);
+	if(IsValid(HitSound))
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, Hit.Location);
+	}
+	
 	AActor* HitActor = Hit.GetActor();
 
 	FPointDamageEvent DamageEvent;
@@ -38,12 +42,8 @@ void UWeaponBarrelComponent::ProcessHit(const FHitResult& Hit, const FVector& Di
 void UWeaponBarrelComponent::Shot(FVector ShotStart, FVector ShotDirection)
 {
 	FHitResult ShotResult;
-	FVector MuzzleLocation = GetComponentLocation();
-	
 	FVector ShotEnd = ShotStart + FireRange * ShotDirection;
-	
-	DrawDebugSphere(GetWorld(), ShotEnd, 10.0f, 24, FColor::Red, false, 1.0f);
-	DrawDebugLine(GetWorld(), MuzzleLocation, ShotEnd, FColor::Red, false, 1.0f, 0, 3.0f);
+	bool bHasHit = HitScan(ShotStart, ShotDirection, ShotEnd, ShotResult);
 }
 
 APawn* UWeaponBarrelComponent::GetOwningPawn() const

@@ -17,11 +17,14 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	
-	AFaromStudioTestCharacter* GetCharacterOwner() const;
+
+	UFUNCTION(BlueprintCallable)
+	AFaromStudioTestCharacter* GetCharacterOwner();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* WeaponMesh;
+
+	virtual void SetOwner(AActor* NewOwner) override;
 private:
 	AFaromStudioTestCharacter* CachedCharacterOwner;
 };
